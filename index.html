@@ -10,9 +10,24 @@
   <meta name="google-site-verification" content="47jdk9JS_UyE9SH9ObMulmFUPW1kL2m2HmHkgv5gK3A" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600&display=swap"
-    rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --bg: #080808;
+      --surface: #0f0f0f;
+      --border: #1a1a1a;
+      --border-hover: #2a2a2a;
+      --accent: #e8ff47;
+      --accent-dim: rgba(232, 255, 71, 0.08);
+      --text-primary: #f0f0f0;
+      --text-muted: #3a3a3a;
+      --text-subtle: #555;
+      --error: #ff4d4d;
+      --error-dim: rgba(255, 77, 77, 0.08);
+      --radius: 8px;
+      --transition: 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
     *,
     *::before,
     *::after {
@@ -25,65 +40,82 @@
     html,
     body {
       height: 100%;
-      background: #0d0d0d;
-      color: #e8e8e8;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 14px;
+      background: var(--bg);
+      color: var(--text-primary);
+      font-family: 'Space Mono', monospace;
+      font-size: 16px;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
     }
 
     body {
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
       padding: 24px;
     }
 
-    .app {
-      width: 100%;
-      max-width: 480px;
-    }
-
-    .wordmark {
-      text-align: center;
-      font-weight: 300;
-      font-size: 13px;
-      letter-spacing: 0.3em;
-      color: #555;
-      text-transform: uppercase;
-      margin-bottom: 32px;
-    }
-
     .card {
-      background: #111111;
-      border: 1px solid #1e1e1e;
-      border-radius: 6px;
-      padding: 24px;
+      width: 100%;
+      max-width: 460px;
+      padding: 2.5rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1) 0.05s, transform 0.35s cubic-bezier(0.4, 0, 0.2, 1) 0.05s;
+    }
+
+    .card.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .header-wordmark {
+      font-size: 1.1rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      color: var(--text-primary);
+    }
+
+    .header-sub {
+      font-size: 0.72rem;
+      color: var(--text-subtle);
+      letter-spacing: 0.08em;
+      margin-top: 0.3rem;
+    }
+
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 1.75rem 0;
     }
 
     .input {
       display: block;
       width: 100%;
-      padding: 14px 16px;
-      background: #161616;
-      border: 1px solid #222;
-      border-radius: 6px;
-      color: #e8e8e8;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 14px;
-      font-weight: 400;
+      padding: 0.85rem 1rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-family: 'Space Mono', monospace;
+      font-size: 0.9rem;
+      color: var(--text-primary);
+      caret-color: var(--text-primary);
       outline: none;
-      transition: border-color 0.15s;
+      transition: border-color var(--transition), box-shadow var(--transition);
       user-select: text;
     }
 
     .input::placeholder {
-      color: #555;
+      color: var(--text-muted);
     }
 
     .input:focus {
-      border-color: #4d9fff;
+      border-color: var(--border-hover);
+      box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.04);
     }
 
     .input:disabled {
@@ -94,244 +126,242 @@
     .btn {
       display: block;
       width: 100%;
-      padding: 14px 16px;
-      margin-top: 12px;
-      background: #4d9fff;
-      border: 1px solid #4d9fff;
-      border-radius: 6px;
-      color: #000;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 13px;
-      font-weight: 600;
-      text-transform: uppercase;
+      margin-top: 0.75rem;
+      padding: 0.85rem;
+      background: transparent;
+      color: var(--text-primary);
+      font-family: 'Space Mono', monospace;
+      font-weight: 700;
+      font-size: 0.82rem;
       letter-spacing: 0.1em;
+      text-transform: uppercase;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
       cursor: pointer;
-      transition: filter 0.15s, transform 0.1s;
+      transition: background var(--transition), border-color var(--transition), transform var(--transition), opacity var(--transition);
     }
 
     .btn:hover:not(:disabled) {
-      filter: brightness(1.15);
+      border-color: var(--border-hover);
+      background: rgba(255, 255, 255, 0.04);
     }
 
     .btn:active:not(:disabled) {
-      transform: scale(0.98);
+      transform: scale(0.985);
     }
 
     .btn:disabled {
-      opacity: 0.4;
+      opacity: 0.35;
       cursor: not-allowed;
+      transform: none;
     }
 
-    .btn-text-idle,
-    .btn-text-loading {
+    .result-area {
+      margin-top: 1.25rem;
+      opacity: 0;
+      transform: translateY(6px);
       pointer-events: none;
+      transition: opacity 0.22s cubic-bezier(0.4, 0, 0.2, 1), transform 0.22s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    .btn-text-loading {
-      display: none;
-    }
-
-    .is-loading .btn-text-idle {
-      display: none;
-    }
-
-    .is-loading .btn-text-loading {
-      display: inline;
-    }
-
-    @keyframes ellipsis {
-      0% {
-        content: '';
-      }
-
-      25% {
-        content: '.';
-      }
-
-      50% {
-        content: '..';
-      }
-
-      75% {
-        content: '...';
-      }
-    }
-
-    .dots::after {
-      content: '';
-      animation: ellipsis 1.2s steps(1) infinite;
-    }
-
-    .result {
-      display: none;
-      margin-top: 16px;
-    }
-
-    .has-result .result,
-    .has-error .result {
-      display: block;
+    .result-area.is-active {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
     }
 
     .result-success {
       display: none;
+      background: var(--accent-dim);
+      border: 1px solid rgba(232, 255, 71, 0.15);
+      border-radius: var(--radius);
+      padding: 0.9rem 1rem;
+      align-items: center;
+      justify-content: space-between;
     }
 
-    .has-result .result-success {
+    .result-success.is-visible {
       display: flex;
-      align-items: center;
-      gap: 10px;
-      background: #161616;
-      border: 1px solid #222;
-      border-radius: 6px;
-      padding: 12px 16px;
+    }
+
+    .result-success-inner {
+      min-width: 0;
+    }
+
+    .result-label {
+      font-size: 0.65rem;
+      letter-spacing: 0.12em;
+      color: var(--text-subtle);
+      text-transform: uppercase;
+      margin-bottom: 0.25rem;
     }
 
     .result-id {
-      flex: 1;
-      color: #4d9fff;
-      font-weight: 500;
-      font-size: 15px;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--accent);
       word-break: break-all;
-      min-width: 0;
       user-select: text;
     }
 
     .copy-btn {
       flex-shrink: 0;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      padding: 0.4rem;
       display: flex;
       align-items: center;
-      gap: 6px;
-      background: none;
-      border: 1px solid #222;
-      border-radius: 6px;
-      padding: 8px 10px;
-      color: #e8e8e8;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 11px;
-      cursor: pointer;
-      transition: border-color 0.15s;
-    }
-
-    .copy-btn:hover {
-      border-color: #4d9fff;
+      justify-content: center;
     }
 
     .copy-btn svg {
-      width: 14px;
-      height: 14px;
+      width: 18px;
+      height: 18px;
       fill: none;
-      stroke: currentColor;
+      stroke: var(--text-subtle);
       stroke-width: 2;
       stroke-linecap: round;
       stroke-linejoin: round;
+      transition: stroke var(--transition);
     }
 
-    .copy-icon-check,
-    .copy-label-copied {
+    .copy-btn:hover svg {
+      stroke: var(--text-primary);
+    }
+
+    .copy-btn .icon-check {
       display: none;
     }
 
-    .copy-btn.is-copied .copy-icon-clip {
+    .copy-btn.is-copied .icon-clip {
       display: none;
     }
 
-    .copy-btn.is-copied .copy-icon-check {
+    .copy-btn.is-copied .icon-check {
       display: block;
-    }
-
-    .copy-btn.is-copied .copy-label-copy {
-      display: none;
-    }
-
-    .copy-btn.is-copied .copy-label-copied {
-      display: inline;
+      stroke: var(--accent);
     }
 
     .result-error {
       display: none;
-      color: #ff4d4d;
-      font-size: 13px;
-      font-weight: 400;
+      background: var(--error-dim);
+      border: 1px solid rgba(255, 77, 77, 0.15);
+      border-radius: var(--radius);
+      padding: 0.9rem 1rem;
+      font-size: 0.82rem;
+      color: var(--error);
     }
 
-    .has-error .result-error {
+    .result-error.is-visible {
       display: block;
     }
 
-    .has-error .result-success {
-      display: none;
+    .result-error-x {
+      margin-right: 0.4rem;
     }
 
     .about {
-      max-width: 480px;
-      margin: 24px auto 0;
-      color: #555;
-      font-size: 0.75rem;
-      line-height: 1.6;
+      max-width: 460px;
+      margin-top: 2rem;
+      font-size: 0.72rem;
+      color: var(--text-subtle);
+      line-height: 1.7;
       text-align: center;
+      opacity: 0;
+      transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1) 0.2s;
+    }
+
+    .about.is-visible {
+      opacity: 1;
     }
   </style>
 </head>
 
 <body>
-  <div class="app" id="app">
-    <div class="wordmark">decImg</div>
-    <div class="card">
-      <form id="form">
-        <input type="text" class="input" id="decal-input" placeholder="Decal ID" autocomplete="off" spellcheck="false">
-        <button type="submit" class="btn" id="convert-btn">
-          <span class="btn-text-idle">Convert</span>
-          <span class="btn-text-loading">Converting<span class="dots"></span></span>
-        </button>
-      </form>
-      <div class="result" aria-live="polite">
-        <div class="result-success">
-          <span class="result-id" id="result-id"></span>
-          <button type="button" class="copy-btn" id="copy-btn">
-            <svg class="copy-icon-clip" viewBox="0 0 24 24">
-              <rect x="9" y="9" width="13" height="13" rx="2" />
-              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
-            </svg>
-            <svg class="copy-icon-check" viewBox="0 0 24 24">
-              <polyline points="20 6 9 17 4 12" />
-            </svg>
-            <span class="copy-label-copy">Copy</span>
-            <span class="copy-label-copied">Copied</span>
-          </button>
+  <div class="card" id="card">
+    <div class="header-wordmark">decImg</div>
+    <div class="header-sub">Decal ID → Image ID</div>
+    <hr class="divider">
+    <form id="form">
+      <input type="text" class="input" id="decal-input" placeholder="Decal ID" autocomplete="off" autocorrect="off"
+        autocapitalize="off" spellcheck="false">
+      <button type="submit" class="btn" id="convert-btn">Convert</button>
+    </form>
+    <div class="result-area" id="result-area" aria-live="polite">
+      <div class="result-success" id="result-success">
+        <div class="result-success-inner">
+          <div class="result-label">Image ID</div>
+          <div class="result-id" id="result-id"></div>
         </div>
-        <div class="result-error" id="result-error"></div>
+        <button type="button" class="copy-btn" id="copy-btn">
+          <svg class="icon-clip" viewBox="0 0 24 24">
+            <rect x="9" y="9" width="13" height="13" rx="2" />
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+          </svg>
+          <svg class="icon-check" viewBox="0 0 24 24">
+            <polyline points="20 6 9 17 4 12" />
+          </svg>
+        </button>
+      </div>
+      <div class="result-error" id="result-error"><span class="result-error-x">✕</span><span id="error-msg"></span>
       </div>
     </div>
-    <p class="about">Paste a Roblox Decal ID and get back the underlying Image ID. Useful for scripting, asset
-      pipelines, or just figuring out what's behind a decal.</p>
   </div>
+  <p class="about" id="about">Paste a Roblox Decal ID and get back the underlying Image ID. Useful for scripting, asset
+    pipelines, or just figuring out what's behind a decal.</p>
   <script>
     (function () {
-      var app = document.getElementById('app');
+      var card = document.getElementById('card');
+      var about = document.getElementById('about');
       var form = document.getElementById('form');
       var input = document.getElementById('decal-input');
       var btn = document.getElementById('convert-btn');
+      var resultArea = document.getElementById('result-area');
+      var resultSuccess = document.getElementById('result-success');
       var resultId = document.getElementById('result-id');
       var resultError = document.getElementById('result-error');
+      var errorMsg = document.getElementById('error-msg');
       var copyBtn = document.getElementById('copy-btn');
       var copyTimeout;
+      var loadingInterval;
+      var loadingDots = 0;
 
-      function setState(s) {
-        app.classList.remove('is-loading', 'has-result', 'has-error');
-        if (s) app.classList.add(s);
-        var loading = s === 'is-loading';
-        input.disabled = loading;
-        btn.disabled = loading;
+      function setLoading(active) {
+        input.disabled = active;
+        btn.disabled = active;
+        if (active) {
+          resetResult();
+          loadingDots = 0;
+          btn.textContent = 'Converting';
+          loadingInterval = setInterval(function () {
+            loadingDots = (loadingDots + 1) % 4;
+            btn.textContent = 'Converting' + '.'.repeat(loadingDots);
+          }, 320);
+        } else {
+          clearInterval(loadingInterval);
+          btn.textContent = 'Convert';
+        }
       }
 
-      function showResult(id) {
+      function resetResult() {
+        resultArea.classList.remove('is-active');
+        resultSuccess.classList.remove('is-visible');
+        resultError.classList.remove('is-visible');
+      }
+
+      function setResult(id) {
         resultId.textContent = id;
-        setState('has-result');
+        resultSuccess.classList.add('is-visible');
+        resultError.classList.remove('is-visible');
+        resultArea.classList.add('is-active');
       }
 
-      function showError(msg) {
-        resultError.textContent = msg;
-        setState('has-error');
+      function setError(msg) {
+        errorMsg.textContent = msg;
+        resultError.classList.add('is-visible');
+        resultSuccess.classList.remove('is-visible');
+        resultArea.classList.add('is-active');
       }
 
       function copyToClipboard(text) {
@@ -363,7 +393,7 @@
           copyBtn.classList.add('is-copied');
           copyTimeout = setTimeout(function () {
             copyBtn.classList.remove('is-copied');
-          }, 1500);
+          }, 1600);
         });
       });
 
@@ -371,31 +401,35 @@
         e.preventDefault();
         var raw = input.value.trim();
         if (!raw || !/^\d+$/.test(raw)) {
-          showError('Invalid Decal ID');
+          setError('Invalid Decal ID');
           return;
         }
-        setState('is-loading');
+        setLoading(true);
         fetch('/api/convert?id=' + raw)
           .then(function (res) {
             return res.json();
           })
           .then(function (data) {
             if (data.imageId) {
-              showResult(data.imageId);
+              setResult(data.imageId);
             } else {
-              showError(data.error || 'An unexpected error occurred');
+              setError(data.error || 'An unexpected error occurred');
             }
           })
           .catch(function () {
-            showError('An unexpected error occurred');
+            setError('Network error \u2014 check your connection');
           })
           .finally(function () {
-            if (app.classList.contains('is-loading')) setState(null);
+            setLoading(false);
           });
+      });
+
+      document.addEventListener('DOMContentLoaded', function () {
+        card.classList.add('is-visible');
+        about.classList.add('is-visible');
       });
     })();
   </script>
 </body>
-
 
 </html>
