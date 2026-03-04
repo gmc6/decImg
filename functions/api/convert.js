@@ -1,37 +1,52 @@
+const HEADERS = { "Content-Type": "application/json" };
+const URL_REGEX = /<url>(.*?)<\/url>/i;
+const ID_REGEX = /(\d+)$/;
+
+function json(body, status) {
+    return new Response(JSON.stringify(body), { status, headers: HEADERS });
+}
+
 export async function onRequest(context) {
-    const url = new URL(context.request.url);
-    const decalId = url.searchParams.get("id");
-    const authCookie = context.env.ROBLOX_COOKIE;
+    var decalId = new URL(context.request.url).searchParams.get("id");
 
     if (!decalId) {
-        return new Response(JSON.stringify({ error: "Missing Decal ID" }), { status: 400, headers: { "Content-Type": "application/json" } });
+        return json({ error: "Missing Decal ID" }, 400);
     }
+
+    var authCookie = context.env.ROBLOX_COOKIE;
+
     if (!authCookie) {
-        return new Response(JSON.stringify({ error: "Server configuration error" }), { status: 500, headers: { "Content-Type": "application/json" } });
+        return json({ error: "Server configuration error" }, 500);
     }
 
     try {
-        const response = await fetch(`https://assetdelivery.roblox.com/v1/asset/?id=${decalId}`, {
-            headers: { "Cookie": `.ROBLOSECURITY=${authCookie}` }
-        });
+        var response = await fetch(
+            "https://assetdelivery.roblox.com/v1/asset/?id=" + decalId,
+            { headers: { Cookie: ".ROBLOSECURITY=" + authCookie } }
+        );
 
         if (!response.ok) {
-            if (response.status === 401) throw new Error("Authentication failed — cookie may be expired.");
-            throw new Error(`Roblox returned status ${response.status}`);
+            var message = response.status === 401
+                ? "Authentication failed \u2014 cookie may be expired."
+                : "Roblox returned status " + response.status;
+            return json({ error: message }, 502);
         }
 
-        const xmlText = await response.text();
-        const urlMatch = xmlText.match(/<url>(.*?)<\/url>/i);
+        var body = await response.text();
+        var urlMatch = body.match(URL_REGEX);
 
-        if (urlMatch && urlMatch[1]) {
-            const idMatch = urlMatch[1].match(/(\d+)/);
-            if (idMatch && idMatch[1]) {
-                return new Response(JSON.stringify({ imageId: idMatch[1] }), { status: 200, headers: { "Content-Type": "application/json" } });
-            }
+        if (!urlMatch || !urlMatch[1]) {
+            return json({ error: "Could not extract Image ID from response" }, 500);
         }
 
-        throw new Error("Could not extract Image ID from response.");
+        var idMatch = urlMatch[1].match(ID_REGEX);
+
+        if (!idMatch || !idMatch[1]) {
+            return json({ error: "Could not extract Image ID from response" }, 500);
+        }
+
+        return json({ imageId: idMatch[1] }, 200);
     } catch (error) {
-        return new Response(JSON.stringify({ error: error.message }), { status: 500, headers: { "Content-Type": "application/json" } });
+        return json({ error: error.message }, 500);
     }
 }

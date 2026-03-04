@@ -17,8 +17,6 @@
       --surface: #0f0f0f;
       --border: #1a1a1a;
       --border-hover: #2a2a2a;
-      --accent: #e8ff47;
-      --accent-dim: rgba(232, 255, 71, 0.08);
       --text-primary: #f0f0f0;
       --text-muted: #3a3a3a;
       --text-subtle: #555;
@@ -65,7 +63,8 @@
       border-radius: var(--radius);
       opacity: 0;
       transform: translateY(10px);
-      transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1) 0.05s, transform 0.35s cubic-bezier(0.4, 0, 0.2, 1) 0.05s;
+      transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1) 0.05s,
+        transform 0.35s cubic-bezier(0.4, 0, 0.2, 1) 0.05s;
     }
 
     .card.is-visible {
@@ -73,11 +72,10 @@
       transform: translateY(0);
     }
 
-    .header-wordmark {
+    .wordmark {
       font-size: 1.1rem;
       font-weight: 700;
       letter-spacing: 0.05em;
-      color: var(--text-primary);
     }
 
     .divider {
@@ -93,7 +91,7 @@
       background: var(--bg);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      font-family: 'Space Mono', monospace;
+      font-family: inherit;
       font-size: 0.9rem;
       color: var(--text-primary);
       caret-color: var(--text-primary);
@@ -123,15 +121,17 @@
       padding: 0.85rem;
       background: transparent;
       color: var(--text-primary);
-      font-family: 'Space Mono', monospace;
+      font-family: inherit;
       font-weight: 700;
       font-size: 0.82rem;
       letter-spacing: 0.1em;
-      text-transform: none;
       border: 1px solid var(--border);
       border-radius: var(--radius);
       cursor: pointer;
-      transition: background var(--transition), border-color var(--transition), transform var(--transition), opacity var(--transition);
+      transition: background var(--transition),
+        border-color var(--transition),
+        transform var(--transition),
+        opacity var(--transition);
     }
 
     .btn:hover:not(:disabled) {
@@ -155,7 +155,8 @@
       opacity: 0;
       transform: translateY(6px);
       pointer-events: none;
-      transition: opacity 0.22s cubic-bezier(0.4, 0, 0.2, 1), transform 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: opacity 0.22s cubic-bezier(0.4, 0, 0.2, 1),
+        transform 0.22s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .result-area.is-active {
@@ -171,12 +172,12 @@
       border: 1px solid var(--border-hover);
       border-radius: var(--radius);
       padding: 0.9rem 1rem;
-      align-items: center;
-      justify-content: space-between;
     }
 
     .result-success.is-visible {
       display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
 
     .result-success-inner {
@@ -194,20 +195,19 @@
     .result-id {
       font-size: 1rem;
       font-weight: 700;
-      color: var(--text-primary);
       word-break: break-all;
       user-select: text;
     }
 
     .copy-btn {
       flex-shrink: 0;
-      background: transparent;
-      border: none;
-      cursor: pointer;
-      padding: 0.4rem;
       display: flex;
       align-items: center;
       justify-content: center;
+      padding: 0.4rem;
+      background: transparent;
+      border: none;
+      cursor: pointer;
     }
 
     .copy-btn svg {
@@ -252,7 +252,6 @@
       display: block;
     }
 
-
     .about {
       max-width: 460px;
       margin-top: 2rem;
@@ -272,7 +271,7 @@
 
 <body>
   <div class="card" id="card">
-    <div class="header-wordmark">decImg</div>
+    <div class="wordmark">decImg</div>
     <hr class="divider">
     <form id="form">
       <input type="text" class="input" id="decal-input" placeholder="Decal ID" autocomplete="off" autocorrect="off"
@@ -298,7 +297,6 @@
       <div class="result-error" id="result-error"></div>
     </div>
   </div>
-  </div>
   <p class="about" id="about">Paste a Roblox Decal ID and get back the underlying Image ID. Useful for scripting, asset
     pipelines, or just figuring out what's behind a decal.</p>
   <script>
@@ -313,29 +311,28 @@
       var resultId = document.getElementById('result-id');
       var resultError = document.getElementById('result-error');
       var copyBtn = document.getElementById('copy-btn');
-      var copyTimeout;
-      var loadingInterval;
-      var loadingDots = 0;
+      var copyTimer;
+      var ellipsisTimer;
+      var dotCount = 0;
 
       function setLoading(active) {
         input.disabled = active;
         btn.disabled = active;
         if (active) {
           resetResult();
-          loadingDots = 0;
+          dotCount = 0;
           btn.textContent = 'converting';
-          loadingInterval = setInterval(function () {
-            loadingDots = (loadingDots + 1) % 4;
-            btn.textContent = 'converting' + '.'.repeat(loadingDots);
+          ellipsisTimer = setInterval(function () {
+            dotCount = (dotCount + 1) % 4;
+            btn.textContent = 'converting' + '.'.repeat(dotCount);
           }, 320);
         } else {
-          clearInterval(loadingInterval);
+          clearInterval(ellipsisTimer);
           btn.textContent = 'convert';
         }
       }
 
-      function showResult() {
-        resultArea.classList.remove('is-active');
+      function revealResult() {
         resultArea.style.display = 'block';
         requestAnimationFrame(function () {
           requestAnimationFrame(function () {
@@ -355,14 +352,14 @@
         resultId.textContent = id;
         resultSuccess.classList.add('is-visible');
         resultError.classList.remove('is-visible');
-        showResult();
+        revealResult();
       }
 
       function setError(msg) {
         resultError.textContent = msg;
         resultError.classList.add('is-visible');
         resultSuccess.classList.remove('is-visible');
-        showResult();
+        revealResult();
       }
 
       function copyToClipboard(text) {
@@ -370,18 +367,18 @@
           return navigator.clipboard.writeText(text);
         }
         return new Promise(function (resolve, reject) {
-          var ta = document.createElement('textarea');
-          ta.value = text;
-          ta.style.position = 'fixed';
-          ta.style.opacity = '0';
-          document.body.appendChild(ta);
-          ta.select();
+          var textarea = document.createElement('textarea');
+          textarea.value = text;
+          textarea.style.position = 'fixed';
+          textarea.style.opacity = '0';
+          document.body.appendChild(textarea);
+          textarea.select();
           try {
             document.execCommand('copy') ? resolve() : reject();
-          } catch (e) {
-            reject(e);
+          } catch (err) {
+            reject(err);
           } finally {
-            document.body.removeChild(ta);
+            document.body.removeChild(textarea);
           }
         });
       }
@@ -390,9 +387,9 @@
         var text = resultId.textContent;
         if (!text) return;
         copyToClipboard(text).then(function () {
-          clearTimeout(copyTimeout);
+          clearTimeout(copyTimer);
           copyBtn.classList.add('is-copied');
-          copyTimeout = setTimeout(function () {
+          copyTimer = setTimeout(function () {
             copyBtn.classList.remove('is-copied');
           }, 1600);
         });
@@ -400,16 +397,14 @@
 
       form.addEventListener('submit', function (e) {
         e.preventDefault();
-        var raw = input.value.trim();
-        if (!raw || !/^\d+$/.test(raw)) {
+        var value = input.value.trim();
+        if (!value || !/^\d+$/.test(value)) {
           setError('Invalid Decal ID');
           return;
         }
         setLoading(true);
-        fetch('/api/convert?id=' + raw)
-          .then(function (res) {
-            return res.json();
-          })
+        fetch('/api/convert?id=' + value)
+          .then(function (res) { return res.json(); })
           .then(function (data) {
             if (data.imageId) {
               setResult(data.imageId);
@@ -425,10 +420,8 @@
           });
       });
 
-      document.addEventListener('DOMContentLoaded', function () {
-        card.classList.add('is-visible');
-        about.classList.add('is-visible');
-      });
+      card.classList.add('is-visible');
+      about.classList.add('is-visible');
     })();
   </script>
 </body>
