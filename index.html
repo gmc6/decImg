@@ -59,7 +59,7 @@
     .card {
       width: 100%;
       max-width: 460px;
-      padding: 2.5rem;
+      padding: 2.5rem 2.5rem 1.75rem;
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius);
@@ -78,13 +78,6 @@
       font-weight: 700;
       letter-spacing: 0.05em;
       color: var(--text-primary);
-    }
-
-    .header-sub {
-      font-size: 0.72rem;
-      color: var(--text-subtle);
-      letter-spacing: 0.08em;
-      margin-top: 0.3rem;
     }
 
     .divider {
@@ -134,7 +127,7 @@
       font-weight: 700;
       font-size: 0.82rem;
       letter-spacing: 0.1em;
-      text-transform: uppercase;
+      text-transform: none;
       border: 1px solid var(--border);
       border-radius: var(--radius);
       cursor: pointer;
@@ -157,6 +150,7 @@
     }
 
     .result-area {
+      display: none;
       margin-top: 1.25rem;
       opacity: 0;
       transform: translateY(6px);
@@ -165,6 +159,7 @@
     }
 
     .result-area.is-active {
+      display: block;
       opacity: 1;
       transform: translateY(0);
       pointer-events: auto;
@@ -172,8 +167,8 @@
 
     .result-success {
       display: none;
-      background: var(--accent-dim);
-      border: 1px solid rgba(232, 255, 71, 0.15);
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-hover);
       border-radius: var(--radius);
       padding: 0.9rem 1rem;
       align-items: center;
@@ -199,7 +194,7 @@
     .result-id {
       font-size: 1rem;
       font-weight: 700;
-      color: var(--accent);
+      color: var(--text-primary);
       word-break: break-all;
       user-select: text;
     }
@@ -240,7 +235,7 @@
 
     .copy-btn.is-copied .icon-check {
       display: block;
-      stroke: var(--accent);
+      stroke: var(--text-primary);
     }
 
     .result-error {
@@ -257,9 +252,6 @@
       display: block;
     }
 
-    .result-error-x {
-      margin-right: 0.4rem;
-    }
 
     .about {
       max-width: 460px;
@@ -281,12 +273,11 @@
 <body>
   <div class="card" id="card">
     <div class="header-wordmark">decImg</div>
-    <div class="header-sub">Decal ID → Image ID</div>
     <hr class="divider">
     <form id="form">
       <input type="text" class="input" id="decal-input" placeholder="Decal ID" autocomplete="off" autocorrect="off"
         autocapitalize="off" spellcheck="false">
-      <button type="submit" class="btn" id="convert-btn">Convert</button>
+      <button type="submit" class="btn" id="convert-btn">convert</button>
     </form>
     <div class="result-area" id="result-area" aria-live="polite">
       <div class="result-success" id="result-success">
@@ -304,9 +295,9 @@
           </svg>
         </button>
       </div>
-      <div class="result-error" id="result-error"><span class="result-error-x">✕</span><span id="error-msg"></span>
-      </div>
+      <div class="result-error" id="result-error"></div>
     </div>
+  </div>
   </div>
   <p class="about" id="about">Paste a Roblox Decal ID and get back the underlying Image ID. Useful for scripting, asset
     pipelines, or just figuring out what's behind a decal.</p>
@@ -321,7 +312,6 @@
       var resultSuccess = document.getElementById('result-success');
       var resultId = document.getElementById('result-id');
       var resultError = document.getElementById('result-error');
-      var errorMsg = document.getElementById('error-msg');
       var copyBtn = document.getElementById('copy-btn');
       var copyTimeout;
       var loadingInterval;
@@ -333,19 +323,30 @@
         if (active) {
           resetResult();
           loadingDots = 0;
-          btn.textContent = 'Converting';
+          btn.textContent = 'converting';
           loadingInterval = setInterval(function () {
             loadingDots = (loadingDots + 1) % 4;
-            btn.textContent = 'Converting' + '.'.repeat(loadingDots);
+            btn.textContent = 'converting' + '.'.repeat(loadingDots);
           }, 320);
         } else {
           clearInterval(loadingInterval);
-          btn.textContent = 'Convert';
+          btn.textContent = 'convert';
         }
+      }
+
+      function showResult() {
+        resultArea.classList.remove('is-active');
+        resultArea.style.display = 'block';
+        requestAnimationFrame(function () {
+          requestAnimationFrame(function () {
+            resultArea.classList.add('is-active');
+          });
+        });
       }
 
       function resetResult() {
         resultArea.classList.remove('is-active');
+        resultArea.style.display = '';
         resultSuccess.classList.remove('is-visible');
         resultError.classList.remove('is-visible');
       }
@@ -354,14 +355,14 @@
         resultId.textContent = id;
         resultSuccess.classList.add('is-visible');
         resultError.classList.remove('is-visible');
-        resultArea.classList.add('is-active');
+        showResult();
       }
 
       function setError(msg) {
-        errorMsg.textContent = msg;
+        resultError.textContent = msg;
         resultError.classList.add('is-visible');
         resultSuccess.classList.remove('is-visible');
-        resultArea.classList.add('is-active');
+        showResult();
       }
 
       function copyToClipboard(text) {
